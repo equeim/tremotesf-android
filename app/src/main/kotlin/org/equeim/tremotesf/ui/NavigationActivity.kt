@@ -13,6 +13,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -28,7 +32,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.defaultPopTransitionSpec
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -53,6 +56,12 @@ class NavigationActivity : ComponentActivity() {
             Configuration.UI_MODE_NIGHT_UNDEFINED -> "UNDEFINED"
             else -> null
         }
+
+        private const val SCREEN_TRANSITION_DURATION_MS = 300
+        private val SCREEN_TRANSITION_SPEC = ContentTransform(
+            fadeIn(animationSpec = tween(SCREEN_TRANSITION_DURATION_MS)),
+            fadeOut(animationSpec = tween(SCREEN_TRANSITION_DURATION_MS)),
+        )
     }
 
     private val model by viewModels<NavigationActivityViewModel>()
@@ -133,10 +142,9 @@ class NavigationActivity : ComponentActivity() {
                         rememberSaveableStateHolderNavEntryDecorator(),
                         viewModelStoreDecorator
                     ),
-                    // Use the same animation as when navigation back though button on the toolbar to get rid of ugly scaling animation
-                    // We need to do it like that because predictivePopTransitionSpec takes a parameter which we want to ignore
-                    predictivePopTransitionSpec = defaultPopTransitionSpec<NavController.BackStackEntry>()
-                        .let { popSpec -> { popSpec() } },
+                    transitionSpec = { SCREEN_TRANSITION_SPEC },
+                    popTransitionSpec = { SCREEN_TRANSITION_SPEC },
+                    predictivePopTransitionSpec = { SCREEN_TRANSITION_SPEC },
                     modifier = Modifier.dragAndDropTarget(
                         shouldStartDragAndDrop = model::shouldStartDragAndDrop,
                         target = object : DragAndDropTarget {
